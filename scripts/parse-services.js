@@ -34,6 +34,7 @@ if (!fs.existsSync(resourcesPath)) {
 }
 
 let generated = '// DO NOT MODIFY AUTO GENERATED FILE!\n';
+generated += "import { Saga } from 'redux-saga';\n";
 services.forEach(service => {
   generated += `import ${service.name} from '${service.path.replace(
     screensFolder,
@@ -45,6 +46,6 @@ generated += '\nexport default [\n';
 services.forEach(service => {
   generated += `\t${service.name},\n`;
 });
-generated += '];\n';
+generated += '] as Saga[];\n';
 generated = generated.replace(/\t/g, '  ');
 fs.writeFileSync(path.join(resourcesPath, 'services.ts'), generated);

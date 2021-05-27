@@ -115,7 +115,6 @@ export default ${componentNameScreen};
       componentCode,
     );
 
-    console.log(argv.store);
     // copy store folder
     if (argv.store) {
       fs.copySync(
