@@ -1,2 +1,4 @@
 // DO NOT MODIFY AUTO GENERATED FILE!
-export default [];
+import { Saga } from 'redux-saga';
+
+export default [] as Saga[];
