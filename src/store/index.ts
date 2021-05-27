@@ -1,10 +1,10 @@
 import createSagaMiddleware from 'redux-saga';
-import reducerMap from './_resources/reducers';
-import serviceMap from './_resources/services';
 import appStateReducer from './appState/slice';
 import authReducer from './auth/slice';
 import notificationReducer from './notification/slice';
+// REDUCER IMPORTS
 import authServices from './auth/services';
+// SERVICE IMPORTS
 import { configureStore } from '@reduxjs/toolkit';
 
 const sagaMiddleware = createSagaMiddleware({
@@ -19,14 +19,14 @@ const store = configureStore({
     appState: appStateReducer,
     auth: authReducer,
     notification: notificationReducer,
-    ...reducerMap,
+    // REDUCERS
   },
   middleware: [sagaMiddleware],
 });
 
 function startServices() {
   sagaMiddleware.run(authServices);
-  serviceMap.forEach(sagaMiddleware.run);
+  // SERVICES
 }
 
 export type RootState = ReturnType<typeof store.getState>;

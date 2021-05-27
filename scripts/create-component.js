@@ -1,6 +1,5 @@
 const fs = require('fs-extra');
 const path = require('path');
-const { execSync } = require('child_process');
 const argv = require('minimist')(process.argv.slice(2));
 const { pascalCase, camelCase } = require('change-case');
 const componentName = pascalCase(argv._[0] || '');
@@ -17,6 +16,11 @@ const componentNameScreen = `${componentName}Screen`;
  */
 
 if (componentName) {
+  const storeFolder = path.join(
+    process.env.INIT_CWD || process.cwd(),
+    'src',
+    'store',
+  );
   const screensFolder = path.join(
     process.env.INIT_CWD || process.cwd(),
     'src',
@@ -130,11 +134,35 @@ export default ${componentNameScreen};
         path.join(componentFolder, 'store', 'slice.ts'),
         actionTypesContent,
       );
+
+      // Add reducer to store and start services
+      const storeIndexFile = path.join(storeFolder, 'index.ts');
+      const storeIndexContent = fs
+        .readFileSync(storeIndexFile, {
+          encoding: 'utf-8',
+        })
+        .replace(
+          '// REDUCER IMPORTS',
+          `import ${componentNameCamel}Reducer from '@screens/${componentName}/store/slice';\n// REDUCER IMPORTS`,
+        )
+        .replace(
+          '// REDUCERS',
+          `${componentNameCamel}: ${componentNameCamel}Reducer,\n    // REDUCERS`,
+        )
+        .replace(
+          '// SERVICE IMPORTS',
+          `import ${componentNameCamel}Services from '@screens/${componentName}/store/services';\n// SERVICE IMPORTS`,
+        )
+        .replace(
+          '// SERVICES',
+          `sagaMiddleware.run(${componentNameCamel}Services);\n  // SERVICES`,
+        );
+      fs.writeFileSync(storeIndexFile, storeIndexContent);
     }
 
     // ### run store scripts
-    execSync('node ./scripts/parse-reducers.js', { stdio: 'pipe' });
-    execSync('node ./scripts/parse-services.js', { stdio: 'pipe' });
+    // execSync('node ./scripts/parse-reducers.js', { stdio: 'pipe' });
+    // execSync('node ./scripts/parse-services.js', { stdio: 'pipe' });
   } else {
     console.error(
       `${componentName} already exists at [${process.cwd()}] location`,
